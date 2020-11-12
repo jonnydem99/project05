@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import questionsRoutes from './routes/questions.js';
+import answersRoutes from './routes/answers.js';
 import cors from 'cors';
 
 const app = express();
@@ -18,4 +19,5 @@ const home = (request, response) => {
 }
 app.get('/', home);
 app.use('/questions', questionsRoutes);
+app.use('/answers', answersRoutes);
 app.listen( port, () => console.log( 'listening on port ' + port));

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {v4 as uuidv4} from 'uuid';
+//import {v4 as uuidv4} from 'uuid';
 
 import Router from 'express-promise-router'; 
 
@@ -55,17 +55,21 @@ const queryQuestions = async (request, response) => {
 
 const addQuestion = async (request, response) => {
 
-    let questions = request.body;
+    console.log('request.body = ' + request.body);
 
-    const newQuestion = { "uid": uuidv4(), ...question };
+    let question = request.body;
 
-    console.log('POST: question='+JSON.stringify(newQuestion));
+    console.log('quest= ' + question);
 
-    questions = [...questions, newQuestion];
+    /*const newQuestion = { "uid": uuidv4(), ...question };*/
 
-    await dbInsertQuestion( newQuestion);
+    console.log('POST: question='+JSON.stringify(question));
 
-    response.send(`${newQuestion.uid}: ${newQuestion.content}, ${newquestion.category} added`);
+    questions = [...questions, question];
+
+    await dbInsertQuestion( question);
+
+    response.send(`${question.content}, ${question.category} added`);
 
 }
 
@@ -73,25 +77,25 @@ const deleteQuestion = async (request, response) => {
 
     console.log('deleteQuestion called')
 
-    const {uid} = request.params; //const id = request.params['id'];
+    const {id} = request.params; //const id = request.params['id'];
 
-    questions = questions.filter( question => question.id !== uid);
+    questions = questions.filter( question => question.id !== id);
 
-    await dbDeleteQuestion( uid); 
+    await dbDeleteQuestion( id); 
 
-    console.log(`DELETE: id=${uid} deleted`);
+    console.log(`DELETE: id=${id} deleted`);
 
-    response.send(`DELETE: id=${uid} deleted`);
+    response.send(`DELETE: id=${id} deleted`);
 
 }
 
 const queryQuestion = async (request, response) => {
 
-    const {uid} = request.params; //const id = request.params['id'];
+    const {id} = request.params; //const id = request.params['id'];
 
-    let question = await dbQueryQuestion( uid);
+    let question = await dbQueryQuestion( id);
 
-    console.log(`GET: ${question.uid} found`);
+    console.log(`GET: ${question.id} found`);
 
     const context = {"question": question }
 
@@ -103,13 +107,13 @@ const updateQuestion = async (request, response) => {
 
     console.log(JSON.stringify(request.params))
 
-    const {uid} = request.params; //const id = request.params['id'];
+    const {id} = request.params; //const id = request.params['id'];
 
     const {ques, category} = request.body
 
     console.log(`content=${content} category=${category}`);
 
-    let question = questions.find( question => question.uid === uid);
+    let question = questions.find( question => question.id === id);
 
     if (!question) {
 
@@ -125,9 +129,9 @@ const updateQuestion = async (request, response) => {
 
     await dbUpdateQuestion( question);
 
-    console.log(`${question.uid}: ${question.content}, ${question.category} updated`);
+    console.log(`${question.id}: ${question.content}, ${question.category} updated`);
 
-    response.send(`${question.uid}: ${question.content}, ${question.category} updated`);
+    response.send(`${question.id}: ${question.content}, ${question.category} updated`);
 
 }
 
@@ -135,9 +139,9 @@ const updateQuestion = async (request, response) => {
 
 router.get('/', queryQuestions);
 router.post('/', addQuestion);
-router.delete('/:uid', deleteQuestion);
-router.get('/:uid', queryQuestion);
-router.patch('/:uid', updateQuestion);
+router.delete('/:id', deleteQuestion);
+router.get('/:id', queryQuestion);
+router.patch('/:id', updateQuestion);
 
  
 

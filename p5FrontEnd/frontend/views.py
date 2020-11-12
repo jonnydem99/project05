@@ -3,56 +3,138 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 import json
 import requests
+import ast
 from ast import literal_eval
 from django.shortcuts import redirect
 from rest_framework.views import APIView
+from django.http import JsonResponse
+from . answerget import answergett
 #from rest_framework.response import Response
 
 
 def home(request):
+    apii = answergett(request)
+
     if request.method == 'GET':
-        print('home')
-    api_request = requests.get("http://localhost:3000/questions/")#.json()
+        api_request = requests.get("http://localhost:3000/questions/")
     try:
-        print( 'api_request='+str(api_request))
+        print('api_request='+str(api_request))
         q = literal_eval(api_request.content.decode('utf8'))
         print('q=', q, type(q))
-        print( q['data'])
+        print(q['data'])
         json_obj = json.dumps(q['data'])
         print('json_obj=', json_obj, type(json_obj))
-       
-        #api = json.loads(api_request.content)
         api = json.loads(json_obj)
+        print('API = ' + str(api))
+        print('apii = ', apii)
+        #apii = json.loads(ap)
+        
+        #print('apii = ' + apii)
     except Exception as e:
-        print( 'Exception e='+str(e))
+        print('Exception e='+str(e))
         api = "Error..."
-    else: 
-        if request.method == 'POST':
-            post_request = requests.post("http://localhost:3000/questions/")
-            print(post_request)
-    return render(request, 'frontend/home.html', {'api': api})
+
+    return render(request, 'frontend/home.html', {'apii': apii, 'api': api})
+
+''' ap = json.dumps(apiii['answ'])
+    print('ap = ' + ap)
+    apii = json.loads(ap)
+    print('apii = ' + apii)'''
+
 
 def submitquestion(request):
-    return render(request, 'frontend/submitquestion.html')
-
+        return render(request, 'frontend/submitquestion.html')
 
 def add_question(request):
+        if request.method == 'POST':
+            url = 'http://localhost:3000/questions/'
+            data = {
+                "content": request.POST['content'],
+                "category": request.POST['category']
+            }
+            print('data=', data,)
+            print("inside add_question data=" + str(data))
+            api_post = requests.post(url, data)
+            return redirect('/')
+
+
+def add_answer(request, content, category):
     if request.method == 'POST':
-        url = 'http://localhost:3000/questions/'
-        data = request.POST['content']
-        print('data=', data)
-        #data = json.dumps(request.POST)
-        print("inside add_question data=", data)
-        res = requests.post(url, data)
-        print("res= ", res)
-        return HttpResponse(res)
+        url = 'http://localhost:3000/answers/'
+        print('prejson = ' + content + category)
+        data = {
+            "content": [content],
+            "answer": request.POST['answer'],
+            "category": [category],
+        }
+        print('data=', data,)
+        print("inside add_answer data=" + str(data))
+        api_post = requests.post(url, data)
+        return redirect('/')
 
-        #payload_json = json.dumps(payload)
-        #question_data = literal_eval(payload_json.decode("utf-8"))
-        #res = requests.post(url, data = (question_data))
-        #print(res)
-    #return Response(res.json())
 
+
+
+def test(request):
+    apiii = answergett(request) 
+    ap = json.dumps(apiii['answ'])
+    print('ap = ' + ap)
+    apii = json.loads(ap)
+    print('apii = ' + apii)
+    if request.method == 'GET':
+        api_request = requests.get("http://localhost:3000/questions/")
+    try:
+        print('api_request='+str(api_request))
+        q = literal_eval(api_request.content.decode('utf8'))
+        print('q=', q, type(q))
+        print(q['data'])
+        json_obj = json.dumps(q['data'])
+        print('json_obj=', json_obj, type(json_obj))
+        api = json.loads(json_obj)
+        print('API = ' + str(api))
+
+        apii = json.loads(ap)
+        
+        
+        print('apii = ' + apii)
+        #apii_json_obj = ast.literal_eval(apii)
+        #print('apii_json_obj = ', apii_json_obj)
+    except Exception as e:
+        print('Exception e='+str(e))
+        api = "Error..."
+
+    return render(request, 'frontend/test.html', {'apii': apii, 'api': api})
+
+
+
+
+'''
+def answergett(request):
+    if request.method == "GET":
+            api_request = requests.get("http://localhost:3000/answers/")
+            if api_request.status_code == 200:
+                data = api_request.json()
+                print('data = ' + str(data))
+                return render(request, 'frontend/test.html', {'data': data})
+'''
+'''
+def answergett(request):
+    if request.method == 'GET':
+        api_request = requests.get("http://localhost:3000/answers/")
+        try:
+            print('api_request='+str(api_requestt))
+            z = literal_eval(api_request.content.decode('utf8'))
+            print('z=', z, type(z))
+            print(z['data'])
+            json_obj = json.dumps(z['data'])
+            print('json_obj=', json_obj, type(json_obj))
+
+            apii = json.loads(json_obj)
+        except Exception as w:
+            print('Exception w='+str(w))
+            apii = "Error..."
+        return {'apii': apii}
+'''
 '''
 def add_question(request):
     if request.method == 'POST':
